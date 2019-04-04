@@ -4,18 +4,19 @@
 #2.物理机/export/dockershare/ 下放置此脚本
 #3.物理机/export/dockershare/ 下有Srs及Nginx安装包
 #4.物理机/export/dockershare/conf 下有标准配置文件srs.conf及nginx.conf
-#5.物理机文件夹/export/dockershare/与Docker容器通过文件夹共享以减少空间占用
-#6.请先构建relay再构建edge且同组的relay和edge昵称保持一致
+#5.物理机/export/dockershare/yum_packages/ 下有rpm离线安装包
+#6.物理机文件夹/export/dockershare/与Docker容器通过文件夹映射以减少空间占用
+#7.请先构建relay再构建edge且同组的relay和edge昵称保持一致
 
 if [ $# -lt 2 ]; then
         echo "USAGE: $0 LIVE_ROLE SYSTEM_ALIAS"
-        echo "e.g.: $0 edge OB767"
+        echo "e.g.: $0 help ob767"
         exit 1;
 fi
 
 #帮助
 function help {
-	echo "${0} <relay|edge|help> <alias>"
+	echo "${0} <help|relay|edge|rm_relay|rm_edge> <alias>"
 }
 
 #物理机文件夹及Docker容器文件夹目录
@@ -39,7 +40,7 @@ DOCKER_NAME=$(echo $NAME | tr '[a-z]' '[A-Z]')
 #中转服务器命名规则 地域(省份)-昵称-RELAY-编号
 #边缘服务器命名规则 地域(省会)-昵称-EDGE-编号
 relay_name=("BJ-$DOCKER_NAME-RELAY")
-edge_name=("BJ-$DOCKER_NAME-EDGE-1" "TJ-$DOCKER_NAME-EDGE-2" "SH-$DOCKER_NAME-EDGE-3" "CQ-$DOCKER_NAME-DEGE-4" "SJZ-$DOCKER_NAME-EDGE-5" "TY-$DOCKER_NAME-EDGE-6" "SY-$DOCKER_NAME-EDGE-7" "CC-$DOCKER_NAME-EDGE-8" "HEB-$DOCKER_NAME-EDGE-9" "NJ-$DOCKER_NAME-EDGE-10" "HZ-$DOCKER_NAME-EDGE-11" "HF-$DOCKER_NAME-EDGE-12" "FZ-$DOCKER_NAME-EDGE-13" "NC-$DOCKER_NAME-EDGE-14" "JN-$DOCKER_NAME-EDGE-15" "ZZ-$DOCKER_NAME-EDGE-16" "WH-$DOCKER_NAME-EDGE-17" "CS-$DOCKER_NAME-EDGE-18" "GZ-$DOCKER_NAME-EDGE-19" "HK-$DOCKER_NAME-EDGE-20" "CD-$DOCKER_NAME-EDGE-21" "GY-$DOCKER_NAME-EDGE-22" "KM-$DOCKER_NAME-EDGE-23" "XA-$DOCKER_NAME-EDGE-24" "LZ-$DOCKER_NAME-EDGE-25")
+edge_name=("BJ-$DOCKER_NAME-EDGE-1" "TJ-$DOCKER_NAME-EDGE-2" "SH-$DOCKER_NAME-EDGE-3" "CQ-$DOCKER_NAME-EDGE-4" "SJZ-$DOCKER_NAME-EDGE-5" "TY-$DOCKER_NAME-EDGE-6" "SY-$DOCKER_NAME-EDGE-7" "CC-$DOCKER_NAME-EDGE-8" "HEB-$DOCKER_NAME-EDGE-9" "NJ-$DOCKER_NAME-EDGE-10" "HZ-$DOCKER_NAME-EDGE-11" "HF-$DOCKER_NAME-EDGE-12" "FZ-$DOCKER_NAME-EDGE-13" "NC-$DOCKER_NAME-EDGE-14" "JN-$DOCKER_NAME-EDGE-15" "ZZ-$DOCKER_NAME-EDGE-16" "WH-$DOCKER_NAME-EDGE-17" "CS-$DOCKER_NAME-EDGE-18" "GZ-$DOCKER_NAME-EDGE-19" "HK-$DOCKER_NAME-EDGE-20" "CD-$DOCKER_NAME-EDGE-21" "GY-$DOCKER_NAME-EDGE-22" "KM-$DOCKER_NAME-EDGE-23" "XA-$DOCKER_NAME-EDGE-24" "LZ-$DOCKER_NAME-EDGE-25")
 
 #端口号确认函数
 function getport_relay {
