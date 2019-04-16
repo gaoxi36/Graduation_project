@@ -32,6 +32,7 @@ function docker_start {
 	./sbin/nginx -c ./conf/nginx.conf
 	service srs start
 	service crond start
+	cd /export/dockershare
 	crontab crontab_conf
 	echo '${relay_name} is already start'"
 	for edge in ${DOCKER_EDGE_ID[@]}

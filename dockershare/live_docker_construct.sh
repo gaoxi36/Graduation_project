@@ -118,6 +118,7 @@ function create_relay {
 		./sbin/nginx -c ./conf/nginx.conf
 		service srs start
 		service crond start
+		cd /export/dockershare
         	crontab crontab_conf"
 	done
 }
