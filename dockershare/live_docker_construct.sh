@@ -116,7 +116,12 @@ function create_relay {
 		cp /export/dockershare/conf/nginx_relay.conf /usr/local/nginx/conf/nginx.conf
 		cd /usr/local/nginx
 		./sbin/nginx -c ./conf/nginx.conf
-		service srs start"
+		service srs start
+		service crond start
+        	crontab -l > conf
+        	echo "0 0 * * * bash /export/dockershare/clear_m3u8.sh" >> conf
+        	crontab conf
+        	rm -f conf"
 	done
 }
 
