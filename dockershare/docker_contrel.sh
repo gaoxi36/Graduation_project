@@ -32,10 +32,7 @@ function docker_start {
 	./sbin/nginx -c ./conf/nginx.conf
 	service srs start
 	service crond start
-	crontab -l > conf
-	echo "0 0 * * * bash /export/dockershare/clear_m3u8.sh" >> conf
-	crontab conf
-	rm -f conf
+	crontab crontab_conf
 	echo '${relay_name} is already start'"
 	for edge in ${DOCKER_EDGE_ID[@]}
 	do
