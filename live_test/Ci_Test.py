@@ -12,7 +12,7 @@ import datetime
 
 class CI_TEST():
 
-    def send_email(self, text, address, email, start_time):
+    def send_email(self, text, sheet, address, email, start_time):
         send_user = 'gao347699598@163.com'
         receive_user = email
         ret = True
@@ -28,7 +28,7 @@ class CI_TEST():
                 result = result.replace('[1;32;0m', '')
                 error.append(result)
         end_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        text_file = '自动化测试结果：\n\n测试开始时间：'+start_time+'\n测试结束时间：'+end_time+'\n测试节点：'+address+'\n回归样例:【Rtmp, M3u8, Flv】\n样例数量：'+str(example_num)+'\n成功率：'+str(success_num/example_num*100)+'%'
+        text_file = '自动化测试结果：\n\n测试环境：'+sheet+'\n测试开始时间：'+start_time+'\n测试结束时间：'+end_time+'\n测试节点：'+address+'\n回归样例:【Rtmp, M3u8, Flv】\n样例数量：'+str(example_num)+'\n成功率：'+str(success_num/example_num*100)+'%'
         if (len(error)>0):
             text_file += '\n\n-----------------------------------失败节点-----------------------------------\n'
             for text_file_add in error:
@@ -52,7 +52,7 @@ class CI_TEST():
         start_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if (address == '全量回归'):
             tc = TEST_CAST()
-            self.send_email(tc.all_test(sheet), address, email, start_time)
+            self.send_email(tc.all_test(sheet), sheet, address, email, start_time)
         else:
             tc = TEST_CAST()
-            self.send_email(tc.pop_test(sheet, address, 25), address, email, start_time)
+            self.send_email(tc.pop_test(sheet, address, 25), sheet, address, email, start_time)

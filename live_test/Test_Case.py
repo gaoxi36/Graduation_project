@@ -42,7 +42,7 @@ class TEST_CAST:
                 for i in play.Result:
                     i = i.replace(edge_rtmp_port, edge_address)
                     i = i.replace(edge_http_port, edge_address)
-                    i = i[:40] + '-[' + relay_name + ']-' + i[41:]
+                    i = i[:i.find(']')+1] + '-[' + relay_name + ']-' + i[i.find(']')+1:]
                     Result.append(i)
             push.push_stop()
         #edge-push, edge-play(random)
@@ -104,7 +104,7 @@ class TEST_CAST:
                 for i in play.Result:
                     i = i.replace(edge_rtmp_port, edge_address)
                     i = i.replace(edge_http_port, edge_address)
-                    i = i[:40]+'-['+edge_name+']-'+i[41:]
+                    i = i[:i.find(']')+1]+'-['+edge_name+']-'+i[i.find(']')+1:]
                     Result.append(i)
             push.push_stop()
             for i in Result:
