@@ -1,1 +1,1 @@
-0 0 * * * bash /export/dockershare/clear_m3u8.sh
+59 23 * * * bash /export/dockershare/clear_m3u8.sh
