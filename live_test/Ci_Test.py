@@ -8,6 +8,7 @@ from Test_Case import TEST_CAST
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
+from twilio.rest import TwilioRestClient
 import datetime
 
 class CI_TEST():
@@ -55,4 +56,4 @@ class CI_TEST():
             self.send_email(tc.all_test(sheet), sheet, address, email, start_time)
         else:
             tc = TEST_CAST()
-            self.send_email(tc.pop_test(sheet, address, 25), sheet, address, email, start_time)
+            self.send_email(tc.pop_test(sheet, address), sheet, address, email, start_time)

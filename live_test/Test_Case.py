@@ -47,14 +47,14 @@ class TEST_CAST:
             push.push_stop()
         #edge-push, edge-play(random)
             for pop in edge:
-                for R in self.pop_test(sheet, pop[0], 1):
+                for R in self.all_test_pop(sheet, pop[0], 5):
                     Result.append(R)
                 time.sleep(5)
         for i in Result:
             print(i)
         return Result
 
-    def pop_test(self, sheet, pop_name, test_num):
+    def all_test_pop(self, sheet, pop_name, test_num):
         Result = []
         relay = []
         edge = []
@@ -110,3 +110,43 @@ class TEST_CAST:
             for i in Result:
                 print(i)
             return Result
+
+    def pop_test(self, sheet, pop_name):
+        Result = []
+        relay = []
+        edge = []
+        file = xlrd.open_workbook(r'dev.xlsx')
+        dev_file = file.sheet_by_name(sheet)
+        i = 2
+        while i < dev_file.nrows:
+            row = dev_file.row_values(i)
+            if (row[0][-2:] == '中转'):
+                relay.append(row)
+            else:
+                edge.append(row)
+            i += 1
+        # edge-push, edge-play
+        ispop = 'false'
+        for edge_push in edge:
+            if (edge_push[0] == pop_name):
+                ispop = 'true'
+                edge_name = edge_push[0]
+                edge_ip = edge_push[2]
+                edge_rtmp_port = edge_push[3]
+                edge_http_port = edge_push[4]
+                break
+        if (ispop == 'false'):
+            print(pop_name + ' is a not true pop')
+            sys.exit(0)
+        else:
+            push = PUSH_PLAY(edge_ip, edge_rtmp_port, edge_http_port, 'live', 'BadApple', 'push')
+            play = PUSH_PLAY(edge_ip, edge_rtmp_port, edge_http_port, 'live', 'BadApple', 'play')
+            for i in play.Result:
+                i = i.replace(edge_rtmp_port, edge_name)
+                i = i.replace(edge_http_port, edge_name)
+                i = i[:i.find(']') + 1] + '-[' + edge_name + ']-' + i[i.find(']') + 1:]
+                Result.append(i)
+        push.push_stop()
+        for i in Result:
+            print(i)
+        return Result
