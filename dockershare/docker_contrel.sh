@@ -18,6 +18,9 @@ function help {
 NAME=$2
 DOCKER_NAME=$(echo $NAME | tr '[a-z]' '[A-Z]')
 
+#物理机文件夹及Docker容器文件夹目录
+readonly DIR=$(cd `dirname $0`;cd ..;pwd)
+
 #集群容器ID
 DOCKER_RELAY_ID=`docker ps -aqf 'name='$DOCKER_NAME'-RELAY'`
 DOCKER_EDGE_ID=`docker ps -aqf 'name='$DOCKER_NAME'-EDGE'`
@@ -32,7 +35,7 @@ function docker_start {
 	./sbin/nginx -c ./conf/nginx.conf
 	service srs start
 	service crond start
-	cd /export/dockershare
+	cd ${DOCKER_SHARE_DIR}
 	crontab crontab_conf
 	echo '${relay_name} is already start'"
 	for edge in ${DOCKER_EDGE_ID[@]}
@@ -42,8 +45,8 @@ function docker_start {
 		docker exec $edge /bin/bash -c \
 		"mv -f /usr/local/srs/conf/srs.conf /usr/local/srs/conf/srs.conf.old
                 mv -f /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf.old
-                cp /export/dockershare/conf/srs_edge.conf /usr/local/srs/conf/srs.conf
-                cp /export/dockershare/conf/nginx_edge.conf /usr/local/nginx/conf/nginx.conf
+                cp ${DIR}/dockershare/conf/srs_edge.conf /usr/local/srs/conf/srs.conf
+                cp ${DIR}/dockershare/conf/nginx_edge.conf /usr/local/nginx/conf/nginx.conf
 		sed -i 's/767.767.767.767/${DOCKER_RELAY_IP}/g' /usr/local/srs/conf/srs.conf
 		sed -i 's/767.767.767.767/${DOCKER_RELAY_IP}/g' /usr/local/nginx/conf/nginx.conf
                 cd /usr/local/nginx

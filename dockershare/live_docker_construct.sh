@@ -1,12 +1,7 @@
 #!/bin/bash
 #前提条件
 #1.物理机安装有Docker容器且拉取镜像centos:6.6
-#2.物理机/export/dockershare/ 下放置此脚本
-#3.物理机/export/dockershare/ 下有Srs及Nginx安装包
-#4.物理机/export/dockershare/conf 下有标准配置文件srs.conf及nginx.conf
-#5.物理机/export/dockershare/yum_packages/ 下有rpm离线安装包
-#6.物理机文件夹/export/dockershare/与Docker容器通过文件夹映射以减少空间占用
-#7.请先构建relay再构建edge且同组的relay和edge昵称保持一致
+#2.请先构建relay再构建edge且同组的relay和edge昵称保持一致
 
 if [ $# -lt 2 ]; then
         echo "USAGE: $0 LIVE_ROLE SYSTEM_ALIAS"
@@ -20,8 +15,9 @@ function help {
 }
 
 #物理机文件夹及Docker容器文件夹目录
-readonly SHARE_DIR="/export/dockershare/"
-readonly DOCKER_SHARE_DIR="/export/dockershare/"
+readonly SHARE_DIR=$(cd `dirname $0`;pwd)
+readonly DOCKER_SHARE_DIR=$(cd `dirname $0`;pwd)
+readonly DIR=$(cd `dirname $0`;cd ..;pwd)
 
 #Docker容器镜像名
 readonly BASE_DOCKER="centos:6.6"
@@ -102,23 +98,23 @@ function create_relay {
 		ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 		#现在不再采用yum安装为节约时间采用rpm安装包离线安装
 		#yum install -y lsb gcc zlib zlib-devel pcre pcre-devel
-		cd /export/dockershare/yum_packages/
+		cd ${DIR}/dockershare/yum_packages/
 		rpm -ivh ./*.rpm --nodeps --force
-		cp -rf /export/dockershare/SRS/ /export/
-		bash /export/SRS/INSTALL
-		cp -rf /export/dockershare/nginx/ /export/
-		cd /export/nginx/
-		bash /export/nginx/configure
+		cp -rf ${DIR}/dockershare/SRS/ ${DIR}/
+		bash ${DIR}/SRS/INSTALL
+		cp -rf ${DIR}/dockershare/nginx/ ${DIR}/
+		cd ${DIR}/nginx/
+		bash ${DIR}/nginx/configure
 		make && make install
 		mv -f /usr/local/srs/conf/srs.conf /usr/local/srs/conf/srs.conf.old
 		mv -f /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf.old
-		cp /export/dockershare/conf/srs_relay.conf /usr/local/srs/conf/srs.conf
-		cp /export/dockershare/conf/nginx_relay.conf /usr/local/nginx/conf/nginx.conf
+		cp ${DIR}/dockershare/conf/srs_relay.conf /usr/local/srs/conf/srs.conf
+		cp ${DIR}/dockershare/conf/nginx_relay.conf /usr/local/nginx/conf/nginx.conf
 		cd /usr/local/nginx
 		./sbin/nginx -c ./conf/nginx.conf
 		service srs start
 		service crond start
-		cd /export/dockershare
+		cd ${DIR}/dockershare
         	crontab crontab_conf"
 	done
 }
@@ -142,18 +138,18 @@ function create_edge {
                 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 		#现在不再采用yum安装为节约时间采用rpm安装包离线安装
                 #yum install -y lsb gcc zlib zlib-devel pcre pcre-devel
-                cd /export/dockershare/yum_packages/
+                cd ${DIR}/dockershare/yum_packages/
                 rpm -ivh ./*.rpm --nodeps --force
-                cp -rf /export/dockershare/SRS/ /export/
-                bash /export/SRS/INSTALL
-                cp -rf /export/dockershare/nginx/ /export/
-                cd /export/nginx/
-                bash /export/nginx/configure
+                cp -rf ${DIR}/dockershare/SRS/ ${DIR}/
+                bash ${DIR}/SRS/INSTALL
+                cp -rf ${DIR}/dockershare/nginx/ ${DIR}/
+                cd ${DIR}/nginx/
+                bash ${DIR}/nginx/configure
                 make && make install
                 mv -f /usr/local/srs/conf/srs.conf /usr/local/srs/conf/srs.conf.old
                 mv -f /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf.old
-                cp /export/dockershare/conf/srs_edge.conf /usr/local/srs/conf/srs.conf
-                cp /export/dockershare/conf/nginx_edge.conf /usr/local/nginx/conf/nginx.conf
+                cp ${DIR}/dockershare/conf/srs_edge.conf /usr/local/srs/conf/srs.conf
+                cp ${DIR}/dockershare/conf/nginx_edge.conf /usr/local/nginx/conf/nginx.conf
 		sed -i 's/767.767.767.767/${RELAY_IP}/g' /usr/local/srs/conf/srs.conf
 		sed -i 's/767.767.767.767/${RELAY_IP}/g' /usr/local/nginx/conf/nginx.conf
                 cd /usr/local/nginx
